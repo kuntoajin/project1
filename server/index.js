@@ -8,6 +8,8 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import path from 'path'
 import { fileURLToPath } from 'url'
+import { register } from './controllers/auth'
+import authRoutes from './routes/auth'
 
 // Config //
 
@@ -35,6 +37,14 @@ const storage = multer.diskStorage({
     }
 })
 const upload = multer({ storage })
+
+// Route with files //
+
+app.post('/auth/register', upload.single('picture', register))
+
+// Routes //
+
+app.use('/auth', authRoutes)
 
 // Mongoose //
 console.log(process.env.MONGO_URL)
