@@ -8,8 +8,12 @@ import helmet from 'helmet'
 import morgan from 'morgan'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { register } from './controllers/auth'
-import authRoutes from './routes/auth'
+import { register } from './controllers/auth.js'
+import { createPost } from './controllers/posts.js'
+import authRoutes from './routes/auth.js'
+import userRoutes from './routes/user.js'
+import postsRoutes from './routes/posts.js'
+import { verifyToken } from './middleware/auth.js'
 
 // Config //
 
@@ -41,13 +45,15 @@ const upload = multer({ storage })
 // Route with files //
 
 app.post('/auth/register', upload.single('picture', register))
+app.post('/posts', verifyToken, upload.single('picture', createPost))
 
 // Routes //
 
 app.use('/auth', authRoutes)
+app.use('/users', userRoutes)
+app.use('/posts', postsRoutes)
 
 // Mongoose //
-console.log(process.env.MONGO_URL)
 const PORT = process.env.PORT || 6001
 mongoose.connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
